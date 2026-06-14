@@ -10,26 +10,25 @@
 
 const BASE = "https://api.billysbilling.com/v2";
 
+// Billy v2 only accepts these file extensions on /v2/files (verified
+// empirically — 422 OTHER otherwise with errorMessage:
+// "File must have one of the following extensions: pdf, jpg, png, gif.").
+const BILLY_ACCEPTED_EXTS = new Set(["pdf", "jpg", "jpeg", "png", "gif"]);
+
 const MIME_BY_EXT: Record<string, string> = {
   pdf: "application/pdf",
   png: "image/png",
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
   gif: "image/gif",
-  webp: "image/webp",
-  heic: "image/heic",
-  csv: "text/csv",
-  txt: "text/plain",
-  xml: "application/xml",
-  json: "application/json",
-  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  xls: "application/vnd.ms-excel",
-  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  doc: "application/msword",
 };
 
+function extOf(filename: string): string | undefined {
+  return filename.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1];
+}
+
 function guessMime(filename: string): string {
-  const ext = filename.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1];
+  const ext = extOf(filename);
   return (ext && MIME_BY_EXT[ext]) ?? "application/octet-stream";
 }
 
@@ -109,8 +108,20 @@ export class BillyClient {
   }): Promise<unknown> {
     const fs = await import("node:fs/promises");
     const nodePath = await import("node:path");
-    const data = await fs.readFile(opts.path);
     const filename = opts.filename ?? nodePath.basename(opts.path);
+    const ext = extOf(filename);
+    if (!ext || !BILLY_ACCEPTED_EXTS.has(ext)) {
+      throw new BillyError(
+        `Billy only accepts pdf, jpg, jpeg, png, gif files. Got: ${filename}`,
+        422,
+        {
+          errorCode: "UNSUPPORTED_FILE_TYPE",
+          errorMessage:
+            "Convert the file to PDF before uploading (recommended for receipts). For images, jpg/png/gif are accepted.",
+        },
+      );
+    }
+    const data = await fs.readFile(opts.path);
     const contentType = opts.contentType ?? guessMime(filename);
     return this.uploadFile({ filename, contentType, data });
   }

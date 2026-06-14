@@ -181,7 +181,7 @@ This means an AI client can never autonomously write to your books in a single t
 
 ### Files / attachments
 - `billy_list_files`, `billy_get_file` — read
-- `billy_upload_file` — upload a local file (receipt PDF, etc.) to Billy; returns id (write-guarded)
+- `billy_upload_file` — upload a local PDF/JPG/PNG/GIF to Billy; returns id (write-guarded; other extensions rejected — Billy v2 limitation)
 - `billy_attach_file_to_bill`, `billy_attach_file_to_invoice` — write-guarded
 
 ---

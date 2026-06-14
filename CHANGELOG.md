@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2 — 2026-06-14
+
+- `billy_upload_file` now validates the extension before hitting the API. Billy v2 only accepts pdf, jpg, jpeg, png, gif on /v2/files (verified empirically — anything else returns a generic 422). The MCP now rejects unsupported extensions up-front with a clear error message instead of forwarding the cryptic API error.
+- MIME map trimmed to match the accepted set.
+
 ## 0.3.1 — 2026-06-14
 
 - New tool: `billy_upload_file` — upload a local file (receipt PDF, supporting doc, etc.) to Billy via multipart. Returns the file metadata incl. id, which composes with `billy_attach_file_to_bill` / `billy_attach_file_to_invoice` for the full receipt → bill → attachment flow.
