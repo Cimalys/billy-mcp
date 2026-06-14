@@ -223,6 +223,10 @@ Three behaviours that aren't obvious from Billy's docs, patched in this MCP so y
 
 4. **`GET /v2/paymentMethods` returns 404** — the resource doesn't actually exist on Billy v2, despite appearing in some references. Tool removed in 0.3.0.
 
+5. **`/v2/files` is append-only.** No DELETE (single or bulk), no PUT — files uploaded via the API cannot be removed or modified via the API. Cleanup must happen through the Billy web UI. No file-delete tool is included in this MCP because Billy doesn't expose one.
+
+6. **`/v2/files` only accepts pdf, jpg, jpeg, png, gif.** Any other extension returns a generic 422. `billy_upload_file` validates up-front (0.3.2+) so callers get a clean error message instead.
+
 ---
 
 ## Limitations & non-goals

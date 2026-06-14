@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3 — 2026-06-14
+
+- Documented `/v2/files` API quirks discovered while testing the upload flow live: files are append-only (no DELETE single or bulk, no PUT), and only pdf/jpg/jpeg/png/gif extensions accepted. The README's API-quirk section now lists all six known Billy v2 oddities the MCP works around.
+
 ## 0.3.2 — 2026-06-14
 
 - `billy_upload_file` now validates the extension before hitting the API. Billy v2 only accepts pdf, jpg, jpeg, png, gif on /v2/files (verified empirically — anything else returns a generic 422). The MCP now rejects unsupported extensions up-front with a clear error message instead of forwarding the cryptic API error.
