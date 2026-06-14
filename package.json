@@ -1,0 +1,29 @@
+{
+  "name": "cimalys-billy-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for billy.dk — Danish accounting. Lets Claude read and write your Billy books over the official API.",
+  "type": "module",
+  "bin": {
+    "cimalys-billy-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "smoke": "node --env-file=.env dist/smoke.js"
+  },
+  "keywords": ["mcp", "billy", "billy.dk", "accounting", "denmark"],
+  "author": "Cimalys ApS",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
