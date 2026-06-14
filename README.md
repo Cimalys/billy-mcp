@@ -2,7 +2,7 @@
 
 **An MCP server for [billy.dk](https://www.billy.dk) — Danish accounting, controllable from Claude (or any MCP-compatible AI client) over the official Billy v2 REST API.**
 
-Read your invoices, categorise bank lines, draft new invoices from notes, run a P&L on demand, prep MOMS reports, browse the audit log. 64 tools covering the full Billy v2 surface. Write operations are gated behind an explicit `confirm: true` so the AI cannot post to your books without per-call acknowledgement.
+Read your invoices, categorise bank lines, draft new invoices from notes, upload receipt PDFs and attach them to bills, run a P&L on demand, prep MOMS reports, browse the audit log. 65 tools covering the full Billy v2 surface. Write operations are gated behind an explicit `confirm: true` so the AI cannot post to your books without per-call acknowledgement.
 
 - **Language:** TypeScript, Node 20+
 - **Auth:** personal access token (`X-Access-Token` header, no OAuth dance)
@@ -123,7 +123,7 @@ This means an AI client can never autonomously write to your books in a single t
 
 ---
 
-## Tool catalog (64 tools)
+## Tool catalog (65 tools)
 
 ### Organisation
 - `billy_whoami` — current org details (read-only)
@@ -181,6 +181,7 @@ This means an AI client can never autonomously write to your books in a single t
 
 ### Files / attachments
 - `billy_list_files`, `billy_get_file` — read
+- `billy_upload_file` — upload a local file (receipt PDF, etc.) to Billy; returns id (write-guarded)
 - `billy_attach_file_to_bill`, `billy_attach_file_to_invoice` — write-guarded
 
 ---
@@ -202,6 +203,10 @@ payment terms net 14. Show me the dry run first."
 "What was my biggest expense category this month?"
 
 "Set my organisation's payment terms to net 14 days. Preview first."
+
+"Upload /Users/me/Downloads/aws-jun.pdf to Billy, create a bill for AWS
+240 EUR for cloud infrastructure, and attach the file. Preview each
+step before confirming."
 ```
 
 ---
@@ -225,7 +230,7 @@ Three behaviours that aren't obvious from Billy's docs, patched in this MCP so y
 - **Not a substitute for a Danish *revisor*.** Bogføringsloven 2022 puts the responsibility for accurate bookkeeping on company management. This MCP makes the AI a useful assistant; it does not replace professional accounting signoff.
 - **No autonomous loop.** This is deliberately a single-tool-call MCP. If you want an agent that polls bank lines nightly and auto-categorises them, that's a separate layer you'd build on top.
 - **Personal-token auth only.** OAuth flow not implemented (no need for a single-user setup; would be needed for SaaS multi-tenant).
-- **No file upload tool yet.** You can attach already-uploaded files to bills/invoices via `billy_attach_file_to_bill` / `billy_attach_file_to_invoice`, but the multipart `POST /v2/files` upload itself isn't wired through MCP yet. Use Billy's bill-capture email (`organization.billEmailAddress`) to ingest receipts automatically.
+- **File upload requires a local path.** `billy_upload_file` reads from a path on the same machine the MCP runs on. To ingest a receipt that lives only in your email, either save it to disk first or forward it to your Billy bill-capture address (`organization.billEmailAddress` from whoami) — Billy auto-creates a draft bill.
 
 ---
 

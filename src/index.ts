@@ -26,7 +26,7 @@ const billy = new BillyClient({ token });
 
 const server = new McpServer({
   name: "cimalys-billy",
-  version: "0.3.0",
+  version: "0.3.1",
 });
 
 function ok(data: unknown) {
@@ -630,6 +630,18 @@ server.tool("billy_list_units", "List product units. READ-ONLY.", {}, () => safe
 // ─── Files / attachments ───────────────────────────────────────────────────
 
 server.tool(
+  "billy_upload_file",
+  "Upload a file (receipt PDF, invoice PDF, supporting doc) from a local path to Billy. WRITE — requires confirm:true. Returns the file metadata including the id, which you then pass to billy_attach_file_to_bill or billy_attach_file_to_invoice. MIME type is auto-detected from the extension.",
+  {
+    path: z.string().describe("Absolute path to the local file (e.g. /Users/me/Downloads/aws-receipt.pdf)."),
+    filename: z.string().optional().describe("Optional custom filename for Billy. Defaults to the basename of `path`."),
+    contentType: z.string().optional().describe("Optional MIME type override. Auto-detected from extension if omitted."),
+    ...CONFIRM_FIELD,
+  },
+  loggedGuarded("upload file", (input) => billy.uploadLocalFile(input as { path: string; filename?: string; contentType?: string })),
+);
+
+server.tool(
   "billy_list_files",
   "List files uploaded to Billy. READ-ONLY.",
   {
@@ -670,7 +682,7 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    "cimalys-billy-mcp v0.3.0 ready (stdio) — write-guard active: writes require confirm:true",
+    "cimalys-billy-mcp v0.3.1 ready (stdio) — write-guard active: writes require confirm:true",
   );
 }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 — 2026-06-14
+
+- New tool: `billy_upload_file` — upload a local file (receipt PDF, supporting doc, etc.) to Billy via multipart. Returns the file metadata incl. id, which composes with `billy_attach_file_to_bill` / `billy_attach_file_to_invoice` for the full receipt → bill → attachment flow.
+- MIME type auto-detected from the file extension (pdf, png, jpg, jpeg, gif, webp, heic, csv, txt, xml, json, xlsx, xls, docx, doc); `contentType` override available.
+- Write-guarded like every other mutation.
+
 ## 0.3.0 — 2026-06-14
 
 **Hard write-guard.** Every mutating tool now refuses to execute without an explicit `confirm: true` parameter. Without confirm, the tool returns a dry-run preview of the API call it would have made. This is a deliberate guardrail so AI clients cannot autonomously write to your books without per-call acknowledgement.
